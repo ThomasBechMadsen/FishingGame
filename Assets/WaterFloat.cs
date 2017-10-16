@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class WaterFloat : MonoBehaviour {
 
+    public float floaterStrength;
+    public List<Transform> floaters = new List<Transform>();
     Rigidbody rb;
 
-    public List<Transform> floaters = new List<Transform>();
 
-
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         rb = GetComponent<Rigidbody>();
 	}
 	
@@ -20,7 +20,7 @@ public class WaterFloat : MonoBehaviour {
         foreach (Transform floater in floaters) {
             if (floater.position.y < 0) {
                 float forceFactor = 1 - floater.position.y;
-                Vector3 floaterForce = (rb.mass * -Physics.gravity * forceFactor)/floaters.Count;
+                Vector3 floaterForce = (floaterStrength * -Physics.gravity * forceFactor)/floaters.Count;
                 rb.AddForceAtPosition(floaterForce, floater.position, ForceMode.Force);
             }
         }

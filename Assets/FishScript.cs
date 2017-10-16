@@ -6,6 +6,8 @@ public class FishScript : MonoBehaviour {
 
     public float swimSpeed;
     public float fleeForce;
+    public int minHealth;
+    public int maxHealth;
     public float health;
     public float bleedDps;
 
@@ -14,6 +16,7 @@ public class FishScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        health = Random.Range(minHealth, maxHealth);
         rb = GetComponent<Rigidbody>();
         currentRoutine = StartCoroutine(idle());
 	}
@@ -45,7 +48,7 @@ public class FishScript : MonoBehaviour {
 
     IEnumerator dead()
     {
-        print("dead");
+        //print("dead");
         //Float upwards
         //Floaters from boat here?
         rb.useGravity = true;
@@ -56,7 +59,7 @@ public class FishScript : MonoBehaviour {
     IEnumerator fleeing()
     {
         //flee
-        print("flee");
+        //print("flee");
         rb.AddForce(new Vector3(fleeForce, 0, 0), ForceMode.Impulse);
         yield return new WaitForFixedUpdate();
         currentRoutine = StartCoroutine(fleeing());
@@ -65,7 +68,7 @@ public class FishScript : MonoBehaviour {
     IEnumerator bleed()
     {
         yield return new WaitForSeconds(1);
-        print("bleed damage");
+        //print("bleed damage");
         dealDamage(bleedDps);
     }
 }

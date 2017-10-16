@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour {
     Rigidbody characterRb;
     Rigidbody boatRb;
     Rigidbody spearRb;
+    GameObject currentSpear;
     Control currentControl = Control.Walking;
     SpearScript ss;
     CameraScript cs;
@@ -23,6 +24,7 @@ public class PlayerController : MonoBehaviour {
     public Transform fishSeat;
     public float interactionDistance;
     public GameObject mainCamera;
+    public Transform mouseTarget;
 
     // Use this for initialization
     void Start () {
@@ -47,11 +49,21 @@ public class PlayerController : MonoBehaviour {
                 break;
             case Control.Fishing:
                 mainMouseButton();
+                if (currentSpear != null) {
+                    SetCameraTarget(currentSpear.transform);
+                }
                 spearTurn();
-                //camera target is set on throw
                 break;
         }
-        interact();
+        if (Input.GetMouseButton(1) && currentSpear == null)
+        {
+            SetCameraTarget(mouseTarget);
+        }
+
+        if (Input.GetKeyDown("e"))
+        {
+            interact();
+        }
     }
 
     void horizontalWalk()
@@ -69,7 +81,7 @@ public class PlayerController : MonoBehaviour {
     void spearTurn()
     {
         float horizontal = Input.GetAxis("Horizontal");
-        if (ss.timeAlive < ss.swimTime) {
+        if (currentSpear != null && currentSpear.activeInHierarchy && ss.timeAlive < ss.swimTime) {
             spearRb.AddTorque(-spearRb.transform.forward * spearTurnForce * horizontal, ForceMode.Force);
         }
     }
@@ -98,13 +110,17 @@ public class PlayerController : MonoBehaviour {
     {
         if (currentControl == Control.Fishing && Input.GetMouseButtonDown(0))
         {
-            throwSpear();
+            if (currentSpear == null || !currentSpear.activeInHierarchy) {
+                throwSpear();
+            }
         }
     }
 
     public void SetCameraTarget(Transform target)
     {
-        cs.target = target;
+        if (cs.target != target) {
+            cs.target = target;
+        }
     }
 
     void throwSpear()
@@ -121,5 +137,6 @@ public class PlayerController : MonoBehaviour {
         ss = g.GetComponent<SpearScript>();
         ss.owner = transform;
         SetCameraTarget(g.transform);
+        currentSpear = g;
     }
 }

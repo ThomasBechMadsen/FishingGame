@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-enum Control { Walking, Sailing, Fishing };
+public enum Control { Walking, Sailing, Fishing };
 
 public class PlayerController : MonoBehaviour {
 
@@ -138,5 +138,10 @@ public class PlayerController : MonoBehaviour {
         ss.owner = transform;
         SetCameraTarget(g.transform);
         currentSpear = g;
+    }
+
+    public void setControl(Control control)
+    {
+        currentControl = control;
     }
 }

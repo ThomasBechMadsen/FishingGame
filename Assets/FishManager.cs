@@ -12,6 +12,7 @@ public class FishManager : MonoBehaviour {
     public Transform upperLeftBoundary, bottomRightBoundary;
 
     public Transform camera;
+    public bool ignoreCamera;
     public Transform boat;
 
     static int activeFish = 0;
@@ -34,12 +35,13 @@ public class FishManager : MonoBehaviour {
 
         if (!validSpawnPoint(xPos, yPos))
         {
-            print("blocked!");
+            //print("blocked!");
             return;
         }
 
         activeFish++;
-        Instantiate(fishTypes[Random.Range(0, fishTypes.Count - 1)], new Vector3(xPos, yPos, 0), Quaternion.Euler(0, 0, 0));
+        GameObject g = Instantiate(fishTypes[Random.Range(0, fishTypes.Count - 1)], new Vector3(xPos, yPos, 0), Quaternion.Euler(0, 90, 0));
+        g.GetComponent<FishAI>().boat = boat;
     }
 
     IEnumerator spawnLoop()
@@ -57,10 +59,10 @@ public class FishManager : MonoBehaviour {
         activeFish--;
     }
 
-    bool validSpawnPoint(float x, float y)
+    bool validSpawnPoint(float x, float y) //Move to fishAI;
     {
         //Check if fish is underground
-        bool underground = Physics.Linecast(new Vector3(x, y, 0), boat.position, LayerMask.GetMask("Terrain"));
+        bool underground = Physics.Linecast(boat.position, new Vector3(x, y, 0), LayerMask.GetMask("Terrain"));
         //Check if player can see the fish when spawned
         Vector3 viewPortPosition = camera.GetComponent<Camera>().WorldToViewportPoint(new Vector3(x, y, 0));
         bool visible = true;
@@ -69,6 +71,11 @@ public class FishManager : MonoBehaviour {
             //print("outside view x: " + viewPortPosition.x + ", y: " + viewPortPosition.y);
             visible = false;
         }
+        if (ignoreCamera)
+        {
+            visible = false;
+        }
+
         return !(underground || visible);
     }
 }

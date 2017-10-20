@@ -24,6 +24,7 @@ public class SpearScript : MonoBehaviour {
 
     Rigidbody rb;
     FixedJoint joint;
+    SpringJoint springJoint;
     Coroutine currentState;
     
     // Use this for initialization
@@ -31,9 +32,11 @@ public class SpearScript : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         rb.AddForce(transform.right * initialForce, ForceMode.Impulse);
         boat = owner.GetComponent<PlayerController>().boat;
-        GetComponent<SpringJoint>().connectedBody = boat.GetComponent<Rigidbody>();
         currentState = StartCoroutine(swimState());
-	}
+        springJoint = GetComponent<SpringJoint>();
+        springJoint.connectedBody = owner.GetComponent<Rigidbody>();
+
+    }
 
     void FixedUpdate()
     {
@@ -107,9 +110,9 @@ public class SpearScript : MonoBehaviour {
             //Attach spear
             joint = gameObject.AddComponent<FixedJoint>();
             joint.connectedBody = other.GetComponent<Rigidbody>();
-            GetComponent<SpringJoint>().maxDistance = Vector3.Distance(owner.position, transform.position);
+            springJoint.maxDistance = Vector3.Distance(springJoint.connectedBody.transform.position, transform.position);
 
-            other.GetComponent<FishScript>().dealDamage(damage);
+            other.GetComponent<FishHealth>().dealDamage(damage);
             controlable = false;
             GetComponent<Collider>().enabled = false;
         }

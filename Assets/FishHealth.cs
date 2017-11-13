@@ -20,6 +20,7 @@ public class FishHealth : MonoBehaviour {
 
     public void dealDamage(float damage)
     {
+        health -= damage;
         checkDeath();
         if (!bleeding) {
             bleeding = true;
@@ -41,5 +42,6 @@ public class FishHealth : MonoBehaviour {
     {
         yield return new WaitForSeconds(1);
         dealDamage(bleedDps);
+        yield return bleed();
     }
 }

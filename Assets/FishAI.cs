@@ -151,7 +151,7 @@ public class FishAI : MonoBehaviour {
     }
 
     /// <summary>
-    /// Swims around peacefully.
+    /// Swim around peacefully.
     /// If no destination is set, generate new destination.
     /// </summary>
     /// <returns></returns>

@@ -128,12 +128,13 @@ public class FishAI : MonoBehaviour {
         switch (newState)
         {
             case states.idle:
+                keepDirection();
                 currentRoutine = StartCoroutine(idle());
                 break;
             case states.fleeing:
                 print("Fleeing");
                 destination = newFleeingDestination();
-                keepDirection();
+                //keepDirection();
                 Debug.DrawLine(transform.position, destination, Color.red, 60);
                 currentRoutine = StartCoroutine(fleeing());
                 break;
@@ -143,6 +144,7 @@ public class FishAI : MonoBehaviour {
                 break;
             case states.scared:
                 print("Scared");
+                keepDirection();
                 currentRoutine = StartCoroutine(scare());
                 break;
         }
@@ -206,7 +208,7 @@ public class FishAI : MonoBehaviour {
         }
 
         //Move towards destination
-        rb.AddForce(transform.forward * fleeForce, ForceMode.Force);
+        rb.AddForce(transform.forward * fleeForce);
 
         //Repeat
         yield return new WaitForFixedUpdate();
@@ -256,9 +258,12 @@ public class FishAI : MonoBehaviour {
         yield return null;
     }
 
+    /// <summary>
+    /// If fish is looking away from destination
+    /// </summary>
     void keepDirection()
     {
-        //If fish is looking away from destination
+        //BUG FOUND: This does not rotate the spear, this causes the spaz
         if (Vector3.Dot(transform.forward, (destination - transform.position).normalized) < 0)
         {
             transform.Rotate(Vector3.up, 180);

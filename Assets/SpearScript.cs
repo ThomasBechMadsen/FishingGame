@@ -96,7 +96,7 @@ public class SpearScript : MonoBehaviour {
             Destroy(gameObject);
             owner.GetComponent<PlayerController>().SetCameraTarget(owner);
         }
-        rb.AddForceAtPosition((owner.position - transform.position).normalized * pullForce, pullPoint.position, ForceMode.Acceleration);
+        rb.AddForceAtPosition((owner.position - transform.position).normalized * pullForce, pullPoint.position, ForceMode.Force);
         yield return new WaitForFixedUpdate();
         currentState = StartCoroutine(pullState());
     }
@@ -104,9 +104,6 @@ public class SpearScript : MonoBehaviour {
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Fish") {
-            StopCoroutine(currentState);
-            currentState = StartCoroutine(pullState());
-
             //Attach spear
             joint = gameObject.AddComponent<FixedJoint>();
             joint.connectedBody = other.GetComponent<Rigidbody>();
@@ -115,6 +112,9 @@ public class SpearScript : MonoBehaviour {
             other.GetComponent<FishHealth>().dealDamage(damage);
             controlable = false;
             GetComponent<Collider>().enabled = false;
+            
+            StopCoroutine(currentState);
+            currentState = StartCoroutine(pullState());
         }
     }
 }

@@ -7,9 +7,9 @@ public class FishAI : MonoBehaviour {
     public enum states { idle, dead, fleeing, scared };
     public Transform boat;
 
-    public float idleForce;
+    public float idleVelocity;
     public float fleeForce;
-    public float scareForce;
+    public float scareVelocity;
     public float destinationReachDistance;
     public float maxHeight;
     public float turnForce;
@@ -128,14 +128,12 @@ public class FishAI : MonoBehaviour {
         switch (newState)
         {
             case states.idle:
+                print("Idle");
                 keepDirection();
                 currentRoutine = StartCoroutine(idle());
                 break;
             case states.fleeing:
                 print("Fleeing");
-                destination = newFleeingDestination();
-                //keepDirection();
-                Debug.DrawLine(transform.position, destination, Color.red, 60);
                 currentRoutine = StartCoroutine(fleeing());
                 break;
             case states.dead:
@@ -144,6 +142,8 @@ public class FishAI : MonoBehaviour {
                 break;
             case states.scared:
                 print("Scared");
+                destination = newScaredDestination();
+                Debug.DrawLine(transform.position, destination, Color.yellow, 60);
                 keepDirection();
                 currentRoutine = StartCoroutine(scare());
                 break;
@@ -173,12 +173,13 @@ public class FishAI : MonoBehaviour {
         else {
             rb.AddTorque(transform.right * turnForce);
         }
-        
+
         //Move towards destination
-        rb.AddForce(transform.forward * idleForce);
+        rb.velocity = transform.forward * idleVelocity;
 
         //Repeat
         yield return new WaitForFixedUpdate();
+        StopCoroutine(currentRoutine);
         currentRoutine = StartCoroutine(idle());
     }
 
@@ -193,7 +194,6 @@ public class FishAI : MonoBehaviour {
         if (destination == Vector3.zero || Vector3.Distance(transform.position, destination) <= destinationReachDistance)
         {
             destination = newFleeingDestination();
-            keepDirection();
             Debug.DrawLine(transform.position, destination, Color.red, 60);
         }
 
@@ -212,6 +212,7 @@ public class FishAI : MonoBehaviour {
 
         //Repeat
         yield return new WaitForFixedUpdate();
+        StopCoroutine(currentRoutine);
         currentRoutine = StartCoroutine(fleeing());
     }
 
@@ -224,9 +225,9 @@ public class FishAI : MonoBehaviour {
         //Check if destination is reached
         if (destination == Vector3.zero || Vector3.Distance(transform.position, destination) <= destinationReachDistance)
         {
-            destination = newScaredDestination();
-            print(destination);
-            keepDirection();
+            StopCoroutine(currentRoutine);
+            currentRoutine = StartCoroutine(idle());
+            yield return null;
         }
 
         //Turn to destination
@@ -240,10 +241,11 @@ public class FishAI : MonoBehaviour {
         }
 
         //Move towards destination
-        rb.AddForce(transform.forward * scareForce, ForceMode.Impulse);
+        rb.velocity = transform.forward * scareVelocity;
 
         //Repeat
         yield return new WaitForFixedUpdate();
+        StopCoroutine(currentRoutine);
         currentRoutine = StartCoroutine(scare());
     }
 

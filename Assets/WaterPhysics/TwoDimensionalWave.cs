@@ -49,8 +49,6 @@ public class TwoDimensionalWave : MonoBehaviour
         meshFil.mesh.vertices = vertices;
         meshFil.mesh.RecalculateNormals();
         meshFil.mesh.RecalculateBounds();
-
-        //TODO: http://catlikecoding.com/unity/tutorials/procedural-grid/
     }
 
     void meshBuilder()

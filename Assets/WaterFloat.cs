@@ -21,7 +21,7 @@ public class WaterFloat : MonoBehaviour {
         foreach (Transform floater in floaters) {
             //Raycast up to hit watersurface
             RaycastHit hit;
-            Debug.DrawRay(floater.position, Vector3.up * 100, Color.green);
+            //Debug.DrawRay(floater.position, Vector3.up * 100, Color.green);
             if(Physics.Raycast(floater.position, Vector3.up, out hit, 100, LayerMask.GetMask("WaterSurface"))) { //Raycast does not detect backside of mesh
                 float forceFactor = 1 + hit.distance;
                 Vector3 floaterForce = (floaterStrength * -Physics.gravity * forceFactor)/floaters.Count;

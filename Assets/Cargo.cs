@@ -42,7 +42,7 @@ public class Cargo : MonoBehaviour {
         {
             cargoWeight += entry.weight;
         }
-        //rigidBody.mass = baseWeight + cargoWeight;
+        rigidBody.mass = baseWeight + (cargoWeight * massReduction);
     }
 }
 

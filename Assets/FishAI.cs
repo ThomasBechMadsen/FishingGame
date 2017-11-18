@@ -13,6 +13,7 @@ public class FishAI : MonoBehaviour {
     public float destinationReachDistance;
     public float maxHeight;
     public float turnForce;
+    public float fleeingTurnForce;
 
     [Range(0, 1)]
     public float turnChance;
@@ -174,8 +175,11 @@ public class FishAI : MonoBehaviour {
             rb.AddTorque(transform.right * turnForce);
         }
 
-        //Move towards destination
-        rb.velocity = transform.forward * idleVelocity;
+        if (transform.position.y < -0.5)
+        {
+            //Move towards destination
+            rb.velocity = transform.forward * idleVelocity;
+        }
 
         //Repeat
         yield return new WaitForFixedUpdate();
@@ -200,15 +204,17 @@ public class FishAI : MonoBehaviour {
         //Turn to destination
         if (transform.TransformDirection(transform.forward).normalized.y < (destination - transform.position).normalized.y)
         {
-            rb.AddTorque(-transform.right * turnForce);
+            rb.AddTorque(-transform.right * fleeingTurnForce);
         }
         else
         {
-            rb.AddTorque(transform.right * turnForce);
+            rb.AddTorque(transform.right * fleeingTurnForce);
         }
 
-        //Move towards destination
-        rb.AddForce(transform.forward * fleeForce);
+        if (transform.position.y < -0.5) {
+            //Move towards destination
+            rb.AddForce(transform.forward * fleeForce);
+        }
 
         //Repeat
         yield return new WaitForFixedUpdate();
@@ -240,8 +246,11 @@ public class FishAI : MonoBehaviour {
             rb.AddTorque(transform.right * turnForce);
         }
 
-        //Move towards destination
-        rb.velocity = transform.forward * scareVelocity;
+        if (transform.position.y < -0.5)
+        {
+            //Move towards destination
+            rb.velocity = transform.forward * scareVelocity;
+        }
 
         //Repeat
         yield return new WaitForFixedUpdate();
@@ -262,10 +271,10 @@ public class FishAI : MonoBehaviour {
 
     /// <summary>
     /// If fish is looking away from destination
+    /// DO NOT USE WHILE FLEEING, SPEAR WILL NOT FLIP
     /// </summary>
     void keepDirection()
     {
-        //BUG FOUND: This does not rotate the spear, this causes the spaz
         if (Vector3.Dot(transform.forward, (destination - transform.position).normalized) < 0)
         {
             transform.Rotate(Vector3.up, 180);

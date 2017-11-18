@@ -8,6 +8,8 @@ public class TwoDimensionalWave : MonoBehaviour
     public float pxScale;
     public float pzScale;
     public float speed;
+    public Transform camera;
+    public float animCullDistance;
 
     public GameObject colliderLink;
 
@@ -33,16 +35,19 @@ public class TwoDimensionalWave : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //This should be optimized a lot. Right now ~2000 vertices per update
         for(int i = 0; i < vertices.Length; i++)
         {
-            float x = (vertices[i].x * pxScale) + (Time.time * speed);
-            float z = -(vertices[i].z * pzScale) + (Time.time * speed); //Negative to make waves go away from camera
-            vertices[i].y = Mathf.PerlinNoise(x, z) * heightScale;
+            if (Mathf.Abs(transform.TransformPoint(vertices[i]).x - camera.position.x) <= animCullDistance) {
+                float x = (vertices[i].x * pxScale) + (Time.time * speed);
+                float z = -(vertices[i].z * pzScale) + (Time.time * speed); //Negative to make waves go away from camera
+                vertices[i].y = Mathf.PerlinNoise(x, z) * heightScale;
 
-            //Adjust colliders
-            if (vertices[i].z == zVerts / 2)
-            {
-                colliders[i - (zVerts / 2 * (xVerts + 1))].transform.position = transform.TransformPoint(vertices[i]);
+                //Adjust colliders
+                if (vertices[i].z == zVerts / 2)
+                {
+                    colliders[i - (zVerts / 2 * (xVerts + 1))].transform.position = transform.TransformPoint(vertices[i]);
+                }
             }
         }
 

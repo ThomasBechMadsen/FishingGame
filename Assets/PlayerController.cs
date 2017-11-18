@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour {
     Control currentControl = Control.Walking;
     SpearScript ss;
     CameraScript cs;
+    FixedJoint playerRestrainer;
 
     public float walkForce;
     public float rowForce;
@@ -33,6 +34,7 @@ public class PlayerController : MonoBehaviour {
         spearRb = spear.GetComponent<Rigidbody>();
         ss = spear.GetComponent<SpearScript>();
         cs = mainCamera.GetComponent<CameraScript>();
+        playerRestrainer = boat.GetComponent<FixedJoint>();
     }
 	
 	// Update is called once per frame
@@ -93,15 +95,18 @@ public class PlayerController : MonoBehaviour {
             if (currentControl == Control.Walking && Vector3.Distance(transform.position, steerSeat.position) <= interactionDistance) {
                 currentControl = Control.Sailing;
                 transform.position = steerSeat.position;
+                restrainPlayer();
             }
             else if (currentControl == Control.Walking && Vector3.Distance(transform.position, fishSeat.position) <= interactionDistance)
             {
                 currentControl = Control.Fishing;
                 transform.position = fishSeat.position;
+                restrainPlayer();
             }
             else
             {
                 currentControl = Control.Walking;
+                releasePlayer();
             }
         }
     }
@@ -143,5 +148,15 @@ public class PlayerController : MonoBehaviour {
     public void setControl(Control control)
     {
         currentControl = control;
+    }
+
+    void restrainPlayer()
+    {
+        playerRestrainer.connectedBody = characterRb;
+    }
+
+    void releasePlayer()
+    {
+        playerRestrainer.connectedBody = null;
     }
 }
